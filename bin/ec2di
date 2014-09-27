@@ -1,50 +1,212 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var path = require('path');
 var log = require('verbalize');
+var prettyTime = require('pretty-hrtime');
+var chalk = require('chalk');
+var semver = require('semver');
+var archy = require('archy');
+var Liftoff = require('liftoff');
+var tildify = require('tildify');
+var interpret = require('interpret');
+var v8flags = require('v8flags');
+var completion = require('completion');
 var argv = require('minimist')(process.argv.slice(2));
+var AWS = require('aws-sdk');
 
-
-/**
- * Everything in the file should be customized
- */
-
-
-// Verbalize `runner`
-log.runner = 'ec2js';
-
-// Use `-f` or `--file` to specify the source file
-var file  = argv._[0] || argv.f || argv.file || 'TODO.md';
-
-// Use `-t` or `--task` to specify the text to append
-var task = argv._[1] || argv.t || argv.task;
-
-
-if (!file) {
-  log.error('Please provide a source file, either as a first argument or with `-s`');
-}
-
-if (!task) {
-  log.error('No tasks will be appended to "' + file + '" since you didn\'t specify anything.');
-}
-
-
-/**
- * Application
- */
-
-
-if(!fs.existsSync(file)) {
-  fs.writeFileSync(file, '# Tasks\n\n');
-}
-
-fs.appendFile(file, ('- [ ] ' + task + '\n'), function (err) {
-  if (err) {throw err;}
-
-  log.writeln();
-  log.writeln(log.gray('  todo [appended] ') + '\'' + task + '\' to ' + log.bold(file));
-
-  // If all is well, log a success message.
-  log.success('  ' + log.runner + ' [done]');
+var cli = new Liftoff({
+  name: 'ec2di',
+  configName: 'ec2difile',
+  extensions: require('interpret').jsVariants,
+  nodeFlags: ['--harmony'] // to support all flags: require('v8flags').fetch();
+}).on('require', function (name, module) {
+  console.log('Loading external module:', name);
+}).on('requireFail', function (name, err) {
+  console.log('Unable to load:', name, err);
+}).on('respawn', function (flags, child) {
+  console.log('Detected node flags:', flags);
+  console.log('Respawned to PID:', child.pid);
 });
+
+// exit with 0 or 1
+var failed = false;
+process.once('exit', function(code) {
+  if (code === 0 && failed) {
+    process.exit(1);
+  }
+});
+
+// args to parse 
+var cliPackage = require('../package');
+var versionFlag = argv.v || argv.version;
+var tasksFlag = argv.T || argv.tasks;
+var tasks = argv._;
+var list = argv.l || argv.list;
+var instance = argv.i || argv.instance;
+var refresh = argv.r || argv.refresh;
+var toRun = tasks.length ? tasks : ['default'];
+
+cli.on('require', function (name) {
+  log.writeln('Requiring external module', chalk.magenta(name));
+});
+
+cli.on('requireFail', function (name) {
+  log.writeln(chalk.red('Failed to load external module'), chalk.magenta(name));
+});
+
+cli.on('respawn', function (flags, child) {
+  var nodeFlags = chalk.magenta(flags.join(', '));
+  var pid = chalk.magenta(child.pid);
+  log.writeln('Node flags detected:', nodeFlags);
+  log.writeln('Respawned to PID:', pid);
+});
+
+cli.launch({
+  cwd: argv.cwd,
+  configPath: argv.ec2difile,
+  require: argv.require,
+  completion: argv.completion
+}, handleArguments);
+
+
+// the actual logic
+function handleArguments(env) {
+  if (versionFlag && tasks.length === 0) {
+    log.writeln('CLI version', cliPackage.version);
+    if (env.modulePackage) {
+      log.writeln('Local version', env.modulePackage.version);
+    }
+    process.exit(0);
+  }
+
+  /*if (!env.modulePath) {
+    log.writeln(
+      chalk.red('Local ec2di not found in'),
+      chalk.magenta(tildify(env.cwd))
+    );
+    log.writeln(chalk.red('Try running: npm install ec2di'));
+    process.exit(1);
+  }*/
+
+  if (!env.configPath) {
+    log.writeln(chalk.red('No ec2difile found'));
+    process.exit(1);
+  }
+
+  // check for semver difference between cli and local installation
+  if (semver.gt(cliPackage.version, env.modulePackage.version)) {
+    log.writeln(chalk.red('Warning: ec2di version mismatch:'));
+    log.writeln(chalk.red('Global ec2di is', cliPackage.version));
+    log.writeln(chalk.red('Local ec2di is', env.modulePackage.version));
+  }
+
+  // chdir before requiring ec2difile to make sure
+  // we let them chdir as needed
+  if (process.cwd() !== env.cwd) {
+    process.chdir(env.cwd);
+    log.writeln(
+      'Working directory changed to',
+      chalk.magenta(tildify(env.cwd))
+    );
+  }
+
+  // this is what actually loads up the ec2difile
+  require(env.configPath);
+  log.writeln('Using ec2difile', chalk.magenta(tildify(env.configPath)));
+
+  var ec2diInst = require(env.modulePath);
+  logEvents(ec2diInst);
+
+  process.nextTick(function () {
+    ec2diInst.start.apply(ec2diInst, toRun);
+  });
+}
+
+// format orchestrator errors
+function formatError(e) {
+  if (!e.err) {
+    return e.message;
+  }
+
+  // PluginError
+  if (typeof e.err.showStack === 'boolean') {
+    return e.err.toString();
+  }
+
+  // normal error
+  if (e.err.stack) {
+    return e.err.stack;
+  }
+
+  // unknown (string, number, etc.)
+  return new Error(String(e.err)).stack;
+}
+
+// wire up logging events
+function logEvents(ec2diInst) {
+
+  // total hack due to poor error management in orchestrator
+  ec2diInst.on('err', function () {
+    failed = true;
+  });
+
+  ec2diInst.on('task_start', function (e) {
+    // TODO: batch these
+    // so when 5 tasks start at once it only logs one time with all 5
+    log.writeln('Starting', '\'' + chalk.cyan(e.task) + '\'...');
+  });
+
+  ec2diInst.on('task_stop', function (e) {
+    var time = prettyTime(e.hrDuration);
+    log.writeln(
+      'Finished', '\'' + chalk.cyan(e.task) + '\'',
+      'after', chalk.magenta(time)
+    );
+  });
+
+  ec2diInst.on('task_err', function (e) {
+    var msg = formatError(e);
+    var time = prettyTime(e.hrDuration);
+    log.writeln(
+      '\'' + chalk.cyan(e.task) + '\'',
+      chalk.red('errored after'),
+      chalk.magenta(time)
+    );
+    log.writeln(msg);
+  });
+
+  ec2diInst.on('task_not_found', function (err) {
+    log.writeln(
+      chalk.red('Task \'' + err.task + '\' is not in your ec2difile')
+    );
+    log.writeln('Please check the documentation for proper ec2difile formatting');
+    process.exit(1);
+  });
+}
+
+
+/**
+ * Commander args / help
+ */
+
+/*program
+  .version('0.0.1')
+  .option('-l, --list', 'List instances (default: True)')
+  .option('-i, --instance [host]', 'Get all the variables about a specific instance')
+  .option('-r, --refresh-cache', 'Force refresh of cache by making API requests to EC2 (default: False - use cache files)')
+  .parse(process.argv);
+
+program.on('--help', function(){
+  console.log('  Examples:');
+  console.log('');
+  console.log('    $ custom-help --help');
+  console.log('    $ custom-help -h');
+  console.log('');
+});
+
+if(!program.args.length) {
+  program.help();
+} else {
+  
+  
+  
+}*/

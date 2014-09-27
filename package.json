@@ -3,10 +3,7 @@
   "description": "ec2di is a node.js clone of the ansible ec2di dynamic inventory script.",
   "version": "0.1.0",
   "homepage": "https://github.com/scmorrison/ec2di",
-  "author": {
-    "name": "Sam Morrison",
-    "url": "https://github.com/scmorrison/ec2di"
-  },
+  "author": "Sam Morrison",
   "repository": {
     "type": "git",
     "url": "git://github.com/scmorrison/ec2di.git"
@@ -20,11 +17,7 @@
       "url": "https://github.com/scmorrison/ec2di/blob/master/LICENSE-GPL-3.0+"
     }
   ],
-  "author": "Sam Morrison",
   "license": "GPL-3.0+",
-  "bugs": {
-    "url": "https://github.com/scmorrison/ec2di/issues"
-  },
   "keywords": [
     "ansible",
     "node",
@@ -47,9 +40,20 @@
   },
   "dependencies": {
     "minimist": "~0.0.8",
-    "verbalize": "~0.1.1"
+    "verbalize": "~0.1.1",
     "aws-sdk": "~2.0.17",
-    "commander": "~2.3.0"
+    "commander": "~2.3.0",
+    "liftoff": "~0.13.2",
+    "interpret": "~0.3.7",
+    "pretty-hrtime": "~0.2.1",
+    "chalk": "~0.5.1",
+    "semver": "~4.0.0",
+    "archy": "~1.0.0",
+    "tildify": "~1.0.0",
+    "v8flags": "~1.0.1",
+    "completion": "~1.0.1",
+    "orchestrator": "~0.3.7",
+    "vinyl-fs": "~0.3.7"
   },
   "devDependencies": {
     "verb": "~0.2.0"
