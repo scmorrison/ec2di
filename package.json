@@ -1,0 +1,27 @@
+{
+  "name": "ec2.js",
+  "version": "0.0.1",
+  "description": "ec2.js is a node.js clone of the ansible ec2.py dynamic inventory script.",
+  "main": "ec2.js",
+  "scripts": {
+    "test": "node ec2.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/scmorrison/ec2.js.git"
+  },
+  "keywords": [
+    "ansible",
+    "node",
+    "ec2",
+    "rds",
+    "route53",
+    "dynamic",
+    "inventory"
+  ],
+  "author": "Sam Morrison",
+  "license": "GPL-3.0+",
+  "bugs": {
+    "url": "https://github.com/scmorrison/ec2.js/issues"
+  }
+}
