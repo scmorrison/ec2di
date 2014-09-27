@@ -23,5 +23,9 @@
   "license": "GPL-3.0+",
   "bugs": {
     "url": "https://github.com/scmorrison/ec2.js/issues"
+  },
+  "dependencies": {
+    "aws-sdk": "~2.0.17",
+    "commander": "~2.3.0"
   }
 }
