@@ -1,14 +1,66 @@
 {
-  "name": "ec2.js",
-  "version": "0.0.1",
-  "description": "ec2.js is a node.js clone of the ansible ec2.py dynamic inventory script.",
-  "main": "ec2.js",
-  "scripts": {
-    "test": "node ec2.js"
+  "name": "ec2di",
+  "description": "ec2di is a node.js clone of the ansible ec2di dynamic inventory script.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/scmorrison/ec2di",
+  "author": {
+    "name": "Sam Morrison",
+    "url": "https://github.com/scmorrison/ec2di"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/scmorrison/ec2.js.git"
+    "url": "git://github.com/scmorrison/ec2di.git"
+  },
+  "bugs": {
+    "url": "https://github.com/scmorrison/ec2di/issues"
+  },
+  "licenses": [
+    {
+      "type": "GPL-3.0+",
+      "url": "https://github.com/scmorrison/ec2di/blob/master/LICENSE-GPL-3.0+"
+    }
+  ],
+  "author": "Sam Morrison",
+  "license": "GPL-3.0+",
+  "bugs": {
+    "url": "https://github.com/scmorrison/ec2di/issues"
+  },
+  "keywords": [
+    "cli",
+    "command line"
+  ],
+  "preferGlobal": true,
+  "bin": {
+    "ec2di": "./bin/ec2di"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.8"
+  },
+  "scripts": {
+    "test": "mocha -R test"
+  },
+  "dependencies": {
+    "minimist": "~0.0.8",
+    "verbalize": "~0.1.1"
+  },
+  "devDependencies": {
+    "verb": "~0.2.0"
+  }
+}
+
+
+{
+  "name": "ec2di",
+  "version": "0.0.1",
+  "description": "ec2di is a node.js clone of the ansible ec2di dynamic inventory script.",
+  "main": "ec2di",
+  "scripts": {
+    "test": "node ec2di"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/scmorrison/ec2di.git"
   },
   "keywords": [
     "ansible",
@@ -22,7 +74,7 @@
   "author": "Sam Morrison",
   "license": "GPL-3.0+",
   "bugs": {
-    "url": "https://github.com/scmorrison/ec2.js/issues"
+    "url": "https://github.com/scmorrison/ec2di/issues"
   },
   "dependencies": {
     "aws-sdk": "~2.0.17",
