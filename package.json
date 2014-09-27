@@ -26,8 +26,13 @@
     "url": "https://github.com/scmorrison/ec2di/issues"
   },
   "keywords": [
-    "cli",
-    "command line"
+    "ansible",
+    "node",
+    "ec2",
+    "rds",
+    "route53",
+    "dynamic",
+    "inventory"
   ],
   "preferGlobal": true,
   "bin": {
@@ -43,41 +48,10 @@
   "dependencies": {
     "minimist": "~0.0.8",
     "verbalize": "~0.1.1"
+    "aws-sdk": "~2.0.17",
+    "commander": "~2.3.0"
   },
   "devDependencies": {
     "verb": "~0.2.0"
-  }
-}
-
-
-{
-  "name": "ec2di",
-  "version": "0.0.1",
-  "description": "ec2di is a node.js clone of the ansible ec2di dynamic inventory script.",
-  "main": "ec2di",
-  "scripts": {
-    "test": "node ec2di"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/scmorrison/ec2di.git"
-  },
-  "keywords": [
-    "ansible",
-    "node",
-    "ec2",
-    "rds",
-    "route53",
-    "dynamic",
-    "inventory"
-  ],
-  "author": "Sam Morrison",
-  "license": "GPL-3.0+",
-  "bugs": {
-    "url": "https://github.com/scmorrison/ec2di/issues"
-  },
-  "dependencies": {
-    "aws-sdk": "~2.0.17",
-    "commander": "~2.3.0"
   }
 }
