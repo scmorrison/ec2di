@@ -1,7 +1,9 @@
 // Ansible EC2 external inventory script settings
 //
 
-var ec2 = {
+var config = {}
+
+config.ec2 = {
 
 // to talk to a private eucalyptus instance uncomment these lines
 // and edit edit eucalyptus_host to be the host name of your cloud controller
@@ -12,7 +14,7 @@ var ec2 = {
 // in AWS and merge the results together. Alternatively, set this to a comma
 // separated list of regions. E.g. 'us-east-1,us-west-1,us-west-2'
 
-  regions: 'all',
+  regions: 'eu-west-1',
   regions_exclude: [
     'us-gov-west-1',
     'cn-north-1'
@@ -106,3 +108,5 @@ var ec2 = {
 // instance_filters: tag:Name=webservers1*
 
 };
+
+module.exports = config;

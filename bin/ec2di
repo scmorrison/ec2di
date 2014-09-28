@@ -3,13 +3,15 @@
 var program = require('commander');
 var chalk = require('chalk');
 var completion = require('completion');
-var AWS = require('aws-sdk');
+var config = require('../ec2.js')
+var ec2di = require('../lib/ec2di');
 
 program
-  .version('0.0.1')
+  .version(require('../package.json').version)
   .option('-l, --list', 'List instances (default: True)')
   .option('-r, --refresh-cache', 'Force refresh of cache by making API requests to EC2 (default: False - use cache files)')
   .option('-i, --instance', 'Get all the variables about a specific instance')
+  .option('-v, --version', 'print version', false)
   .parse(process.argv);
 
 if(!program.args) {
@@ -18,12 +20,4 @@ if(!program.args) {
     console.log('Keywords: ' + program.args);   
 }
 
-AWS.config.region = 'eu-west-1';
-
-new AWS.EC2().describeInstances(function(error, data) {
-  if (error) {
-    console.log(error); // an error occurred
-  } else {
-    console.log(data); // request succeeded
-  }
-});
+ec2di(program);

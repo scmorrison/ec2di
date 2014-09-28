@@ -54,7 +54,8 @@
     "completion": "~1.0.1",
     "orchestrator": "~0.3.7",
     "vinyl-fs": "~0.3.7",
-    "vow": "~0.4.5"
+    "vow": "~0.4.5",
+    "underscore": "~1.7.0"
   },
   "devDependencies": {
     "verb": "~0.2.0"
