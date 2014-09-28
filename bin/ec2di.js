@@ -12,8 +12,18 @@ program
   .option('-i, --instance', 'Get all the variables about a specific instance')
   .parse(process.argv);
 
-if(!program.args.length) {
+if(!program.args) {
     program.help();
 } else {
     console.log('Keywords: ' + program.args);   
 }
+
+AWS.config.region = 'eu-west-1';
+
+new AWS.EC2().describeInstances(function(error, data) {
+  if (error) {
+    console.log(error); // an error occurred
+  } else {
+    console.log(data); // request succeeded
+  }
+});
