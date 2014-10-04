@@ -42,7 +42,7 @@ program
     .description("Print out ec2 regions.")
     .action(function() {
       
-         ec2di.getRegions(function(err, regions) {
+         ec2di.getRegions('ec2', function(err, regions) {
             if (err) console.log(err);
             console.log(regions);
         });
