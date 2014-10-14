@@ -3,11 +3,12 @@
 /**
  * cli interface to ec2di
  */
-var program = require('commander')
-var pkg = require("../package.json")
-var chalk = require('chalk')
-var completion = require('completion')
-var ec2di = require("../lib/ec2di")
+var program = require('commander'),
+    pkg = require("../package.json"),
+    chalk = require('chalk'),
+    completion = require('completion'),
+    ec2di = require("../lib/ec2di");
+
 //var ec2di = require('../lib/ec2di')
 
 var options = {}
@@ -21,7 +22,6 @@ program
   .usage("returns all EC2 and RDS instances for regions defined in config \n\t file (ec2.ini).")
   .description("List all EC2 and RDS instances.")
   .action(function(program) {
-
     var inventory = ec2di.inventory
     console.log(inventory);
   })
@@ -32,7 +32,9 @@ program
   .description("Refresh local inventory cache.")
   .action(function(program) {
 
-    ec2di.doApiCallsUpdateCache()
+    ec2di.doApiCallsUpdateCache().then(function(inventory) {
+      console.log(inventory);
+    });
 
   })
 
