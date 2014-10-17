@@ -4,10 +4,10 @@
  * cli interface to ec2di
  */
 var program = require('commander'),
-    pkg = require("../package.json"),
-    chalk = require('chalk'),
-    completion = require('completion'),
-    ec2di = require("../lib/ec2di");
+  pkg = require("../package.json"),
+  chalk = require('chalk'),
+  completion = require('completion'),
+  ec2di = require("../lib/ec2di")("./ec2.ini");
 
 //var ec2di = require('../lib/ec2di')
 
@@ -22,8 +22,17 @@ program
   .usage("returns all EC2 and RDS instances for regions defined in config \n\t file (ec2.ini).")
   .description("List all EC2 and RDS instances.")
   .action(function(program) {
-    var inventory = ec2di.inventory
+    var inventory = ec2di.inventory;
     console.log(inventory);
+
+    /*ec2di.isCacheValid().then(function(valid) {
+      console.log(valid);
+    });
+    console.log(ec2di.inventory);*/
+
+    /*.then(function(settings) {
+      console.log(settings);
+    });*/
   })
 
 program
