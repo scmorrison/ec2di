@@ -58,7 +58,7 @@
     "underscore": "~1.7.0",
     "q": "~1.0.1",
     "ini": "~1.3.0",
-    "bluebird": "~2.3.4",
+    "bluebird": "latest",
     "async": "~0.9.0",
     "request": "~2.45.0",
     "galaxy": "~0.1.11",
