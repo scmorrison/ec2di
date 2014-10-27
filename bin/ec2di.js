@@ -22,8 +22,8 @@ program
   .usage("returns all EC2 and RDS instances for regions defined in config \n\t file (ec2.ini).")
   .description("List all EC2 and RDS instances.")
   .action(function(program) {
-    var inventory = ec2di.inventory;
-    console.log(inventory);
+
+    ec2di.refresh();
 
     /*ec2di.isCacheValid().then(function(valid) {
       console.log(valid);
@@ -41,9 +41,7 @@ program
   .description("Refresh local inventory cache.")
   .action(function(program) {
 
-    ec2di.doApiCallsUpdateCache().then(function(inventory) {
-      console.log(inventory);
-    });
+    ec2di.refresh();
 
   })
 
