@@ -23,7 +23,9 @@ program
   .description("List all EC2 and RDS instances.")
   .action(function(program) {
 
-    ec2di.refresh();
+    ec2di.inventory().then(function(inventory) {
+      console.log(inventory);
+    });
 
     /*ec2di.isCacheValid().then(function(valid) {
       console.log(valid);
